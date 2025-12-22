@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - TharCho POS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 500px;
+        }
+        
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .myanmar-text {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        button {
+            background: white;
+            color: #10b981;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+        
+        .status {
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">📡</div>
+        <h1>Offline</h1>
+        <p class="myanmar-text">အင်တာနက် ချိတ်ဆက်မှု ကောင်တာပါ</p>
+        <p>
+            You are currently offline. Please check your internet connection and try again.
+        </p>
+        <button onclick="location.reload()">
+            🔄 Retry Connection
+        </button>
+        <div class="status" id="status"></div>
+    </div>
+    
+    <script>
+        // Check connection status
+        function updateStatus() {
+            const status = document.getElementById('status');
+            if (navigator.onLine) {
+                status.textContent = '✅ Connection restored! Reloading...';
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                status.textContent = '❌ Still offline';
+            }
+        }
+        
+        // Listen for online event
+        window.addEventListener('online', () => {
+            updateStatus();
+        });
+        
+        // Check status every 5 seconds
+        setInterval(updateStatus, 5000);
+    </script>
+</body>
+</html>

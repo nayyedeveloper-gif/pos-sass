@@ -1,0 +1,10 @@
+node_modules/
+vendor/
+.env
+.env.*
+storage/logs/
+storage/framework/
+dist/
+build/
+
+.aider*

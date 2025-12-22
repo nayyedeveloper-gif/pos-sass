@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate PWA Icons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #10b981;
+            text-align: center;
+        }
+        .icon-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .icon-item {
+            text-align: center;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+        }
+        button:hover {
+            background: #059669;
+        }
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+            display: none;
+        }
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            display: block;
+        }
+        .instructions {
+            background: #fef3c7;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 TharCho POS - PWA Icons Generator</h1>
+        
+        <div class="instructions">
+            <strong>📝 Instructions:</strong>
+            <ol>
+                <li>Click "Generate All Icons" button below</li>
+                <li>Right-click each icon and "Save image as..."</li>
+                <li>Save with exact filename (e.g., icon-72x72.png)</li>
+                <li>Save all icons to: <code>/public/images/</code></li>
+            </ol>
+        </div>
+
+        <button onclick="generateAllIcons()">🚀 Generate All Icons</button>
+
+        <div id="status" class="status"></div>
+
+        <div id="iconPreview" class="icon-preview"></div>
+    </div>
+
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            canvas.width = size;
+            canvas.height = size;
+
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#10b981');
+            gradient.addColorStop(1, '#059669');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+
+            // Draw tea cup
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const cupWidth = size * 0.4;
+            const cupHeight = size * 0.35;
+
+            // Cup body
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.moveTo(centerX - cupWidth/2, centerY - cupHeight/2);
+            ctx.lineTo(centerX - cupWidth/2 + cupWidth * 0.1, centerY + cupHeight/2);
+            ctx.lineTo(centerX + cupWidth/2 - cupWidth * 0.1, centerY + cupHeight/2);
+            ctx.lineTo(centerX + cupWidth/2, centerY - cupHeight/2);
+            ctx.closePath();
+            ctx.fill();
+
+            // Cup handle
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size * 0.04;
+            ctx.beginPath();
+            ctx.arc(centerX + cupWidth/2 + cupWidth * 0.15, centerY, cupHeight * 0.3, -Math.PI/2, Math.PI/2);
+            ctx.stroke();
+
+            // Steam
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = size * 0.03;
+            ctx.lineCap = 'round';
+            
+            // Steam line 1
+            ctx.beginPath();
+            ctx.moveTo(centerX - cupWidth * 0.2, centerY - cupHeight/2 - size * 0.05);
+            ctx.bezierCurveTo(
+                centerX - cupWidth * 0.15, centerY - cupHeight/2 - size * 0.15,
+                centerX - cupWidth * 0.25, centerY - cupHeight/2 - size * 0.2,
+                centerX - cupWidth * 0.2, centerY - cupHeight/2 - size * 0.25
+            );
+            ctx.stroke();
+
+            // Steam line 2
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY - cupHeight/2 - size * 0.05);
+            ctx.bezierCurveTo(
+                centerX + cupWidth * 0.05, centerY - cupHeight/2 - size * 0.15,
+                centerX - cupWidth * 0.05, centerY - cupHeight/2 - size * 0.2,
+                centerX, centerY - cupHeight/2 - size * 0.25
+            );
+            ctx.stroke();
+
+            // Steam line 3
+            ctx.beginPath();
+            ctx.moveTo(centerX + cupWidth * 0.2, centerY - cupHeight/2 - size * 0.05);
+            ctx.bezierCurveTo(
+                centerX + cupWidth * 0.25, centerY - cupHeight/2 - size * 0.15,
+                centerX + cupWidth * 0.15, centerY - cupHeight/2 - size * 0.2,
+                centerX + cupWidth * 0.2, centerY - cupHeight/2 - size * 0.25
+            );
+            ctx.stroke();
+
+            // Add text for larger icons
+            if (size >= 192) {
+                ctx.fillStyle = 'white';
+                ctx.font = `bold ${size * 0.08}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.fillText('POS', centerX, centerY + cupHeight/2 + size * 0.15);
+            }
+        }
+
+        function generateAllIcons() {
+            const preview = document.getElementById('iconPreview');
+            preview.innerHTML = '';
+
+            sizes.forEach(size => {
+                const item = document.createElement('div');
+                item.className = 'icon-item';
+
+                const title = document.createElement('div');
+                title.style.fontWeight = 'bold';
+                title.style.marginBottom = '10px';
+                title.textContent = `${size}x${size}`;
+
+                const canvas = document.createElement('canvas');
+                drawIcon(canvas, size);
+
+                const filename = document.createElement('div');
+                filename.style.fontSize = '12px';
+                filename.style.color = '#666';
+                filename.style.marginTop = '10px';
+                filename.textContent = `icon-${size}x${size}.png`;
+
+                const downloadBtn = document.createElement('button');
+                downloadBtn.textContent = 'Download';
+                downloadBtn.style.fontSize = '12px';
+                downloadBtn.style.padding = '8px 16px';
+                downloadBtn.style.margin = '10px auto 0';
+                downloadBtn.onclick = () => {
+                    const link = document.createElement('a');
+                    link.download = `icon-${size}x${size}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                };
+
+                item.appendChild(title);
+                item.appendChild(canvas);
+                item.appendChild(filename);
+                item.appendChild(downloadBtn);
+                preview.appendChild(item);
+            });
+
+            const status = document.getElementById('status');
+            status.className = 'status success';
+            status.innerHTML = '✅ All icons generated! Right-click each icon to save, or use the Download buttons.';
+        }
+
+        // Auto-generate on load
+        window.onload = generateAllIcons;
+    </script>
+</body>
+</html>
